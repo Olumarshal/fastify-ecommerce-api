@@ -1,0 +1,29 @@
+ Data Model of ScyllaDB vs. MongoDB
+ScyllaDB:
+
+    Column-Family Data Model: Data is organized into tables with rows and columns,
+    similar to a relational database but optimized for distributed storage.
+    Primary Keys and Clustering Keys: Used to define data distribution and sorting within partitions.
+
+Example Schema:
+CREATE TABLE users (
+  id UUID PRIMARY KEY,
+  name TEXT,
+  email TEXT,
+  age INT
+);
+
+MongoDB:
+
+    Document-Oriented Data Model: Data is stored as JSON-like documents within collections.
+    Flexible Schema: Allows for dynamic and varied data structures within the same collection.
+
+Example Schema:
+{
+  "name": "Kent Clark",
+  "email": "kent1@example.com",
+  "age": 30
+}
+
+ScyllaDB's schema is more rigid and optimized for read-heavy workloads with predictable access patterns,
+while MongoDB offers more flexibility for unstructured and varied data.

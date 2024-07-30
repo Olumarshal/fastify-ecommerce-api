@@ -1,0 +1,26 @@
+TypeScript Decorators in a Fastify Application
+TypeScript decorators can be used in Fastify to add metadata to routes, middleware, or plugins. Decorators provide a way to enhance functionality in a declarative manner.
+
+Example of a route decorator:
+
+import 'reflect-metadata';
+
+function Route(path: string) {
+  return function (target: any, key: string, descriptor: PropertyDescriptor) {
+    Reflect.defineMetadata('path', path, target, key);
+  };
+}
+
+class MyController {
+  @Route('/hello')
+  async helloHandler(req, reply) {
+    reply.send({ message: 'Hello' });
+  }
+}
+
+// Using the decorator metadata to register routes in Fastify
+const fastify = require('fastify')();
+const controller = new MyController();
+const routePath = Reflect.getMetadata('path', controller, 'helloHandler');
+fastify.get(routePath, controller.helloHandler.bind(controller));
+fastify.listen(3000);

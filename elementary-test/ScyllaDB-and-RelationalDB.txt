@@ -1,0 +1,18 @@
+Architectural Differences between ScyllaDB and Traditional Relational Databases
+
+ScyllaDB:
+
+    Distributed NoSQL Database: Designed for high availability and scalability.
+    Shard-Based Architecture: Each node handles a subset of data, minimizing contention and improving performance.
+    Asynchronous Replication: Provides eventual consistency with tunable consistency levels.
+
+Relational Databases:
+
+    ACID Transactions: Ensure strong consistency and durability.
+    Centralized Architecture: Traditional RDBMS often rely on a single node or primary-replica setup,
+    which can become a bottleneck.
+
+Performance and Latency:
+
+    ScyllaDB achieves high performance and low latency through its shard-per-core architecture,
+    efficient use of system resources, and asynchronous I/O.

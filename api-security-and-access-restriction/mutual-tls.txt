@@ -1,0 +1,98 @@
+Securing API request
+
+To secure an API request and ensure that only authorized applications can access it,
+you can use several techniques and tools. Here are some common methods:
+    API Keys: Generate and distribute API keys to authorized applications.
+    Check the API key on each request to verify the application's identity.
+
+    OAuth 2.0: Use OAuth 2.0 to allow applications to access your API on behalf of users.
+    OAuth provides a secure way to authorize applications without sharing user credentials.
+
+    JWT (JSON Web Tokens): Issue JWTs to authorized applications. Each request must include
+    a valid JWT, which can be verified by the server to ensure the request is from an authorized application.
+
+    IP Whitelisting: Restrict access to the API based on the IP addresses of
+    authorized applications.
+
+    Mutual TLS (mTLS): Require client applications to present a valid client certificate
+    when making API requests. The server also presents its certificate to the client,
+    ensuring mutual authentication.
+
+Implementing Mutual TLS (mTLS) in a Node.js Express Application
+Mutual TLS (mTLS) is a method that uses client and server certificates to authenticate both
+parties in an HTTPS connection. Below are the steps to set up mTLS in a Node.js Express
+application.
+
+Step 1: Generate Certificates
+You'll need to generate a CA (Certificate Authority) certificate, a server certificate signed by
+the CA, and a client certificate signed by the CA.
+
+    Generate CA certificate:
+    `openssl req -new -x509 -days 365 -keyout ca-key.pem -out ca-cert.pem -nodes`
+
+    Generate server certificate:
+    `openssl req -newkey rsa:2048 -nodes -keyout server-key.pem -out server-req.pem`
+    `openssl x509 -req -in server-req.pem -days 365 -CA ca-cert.pem -CAkey ca-key.pem -set_serial 01 -out server-cert.pem`
+
+    Generate client certificate:
+    `openssl req -newkey rsa:2048 -nodes -keyout client-key.pem -out client-req.pem`
+    `openssl x509 -req -in client-req.pem -days 365 -CA ca-cert.pem -CAkey ca-key.pem -set_serial 01 -out client-cert.pem`
+
+Step 2: Set Up Express with mTLS
+Create an Express server that requires client certificates for all incoming requests.
+
+Create the server (server.js):
+const express = require('express');
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+// Paths to the certificate files
+const serverKey = path.join(__dirname, 'server-key.pem');
+const serverCert = path.join(__dirname, 'server-cert.pem');
+const caCert = path.join(__dirname, 'ca-cert.pem');
+
+const app = express();
+
+// Middleware to verify client certificate
+app.use((req, res, next) => {
+  const cert = req.connection.getPeerCertificate();
+  if (req.client.authorized) {
+    console.log('Client certificate authorized:', cert.subject);
+    next();
+  } else if (cert.subject) {
+    res.status(403).send(`Client certificate not authorized: ${cert.subject.CN}`);
+  } else {
+    res.status(401).send('Client certificate required');
+  }
+});
+
+app.get('/', (req, res) => {
+  res.send('Hello, mutual TLS!');
+});
+
+const options = {
+  key: fs.readFileSync(serverKey),
+  cert: fs.readFileSync(serverCert),
+  ca: fs.readFileSync(caCert),
+  requestCert: true,
+  rejectUnauthorized: true,
+};
+
+https.createServer(options, app).listen(3000, () => {
+  console.log('Server running on https://localhost:3000');
+});
+
+Step 3: Make Requests with the Client Certificate
+To test the server, you can use `curl` with the client certificate:
+    `curl -v --cert client-cert.pem --key client-key.pem --cacert ca-cert.pem https://localhost:3000/`
+
+Explanation:
+    Server Certificate and Key: The server uses its certificate and key to establish a secure
+    connection.
+
+    Client Certificate: The server requests a client certificate and validates it against the CA
+    certificate.
+    
+    Request Verification: The middleware checks if the client certificate is authorized
+    and proceeds with the request if valid.

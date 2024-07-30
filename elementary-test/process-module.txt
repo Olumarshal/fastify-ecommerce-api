@@ -1,0 +1,13 @@
+The process module in Node.js provides a way to interact with the current process,
+enabling control over the application's lifecycle and access to the system environment.
+
+Access Environment Variables: process.env contains environment variables.
+Process Events: Handle different types of events such as:
+    process.on('exit', (code) => {...}): Executes code when the process is about to exit.
+    process.on('uncaughtException', (err) => {...}): Handles uncaught exceptions.
+    process.on('unhandledRejection', (reason, promise) => {...}): Handles unhandled promise rejections.
+Standard Streams: Access to process.stdin, process.stdout, and process.stderr for input/output.
+Process Management: Control over process behavior, such as:
+    process.exit(code): Exit the process with a specified code.
+    process.cwd(): Get the current working directory.
+    process.argv: Access command-line arguments.

@@ -1,0 +1,25 @@
+Advantages of Using Fastify over Express.js
+
+Performance:
+
+    Fastify is designed for high performance, offering lower overhead and better throughput.
+    Utilizes asynchronous and highly optimized internal mechanisms.
+
+Schema-Based Validation:
+
+    Fastify provides JSON Schema-based request and response validation out of the box, reducing the risk of runtime errors.
+
+Developer Experience:
+
+    Improved error handling and clearer error messages.
+    More extensive plugin system and built-in support for decorators and hooks.
+Example:
+
+const fastify = require('fastify')();
+fastify.get('/example', async (request, reply) => {
+  return { message: 'Hello from Fastify' };
+});
+fastify.listen(3000, (err) => {
+  if (err) throw err;
+  console.log('Server is running on port 3000');
+});

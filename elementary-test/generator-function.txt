@@ -1,0 +1,24 @@
+Generator functions in JavaScript allow you to define an iterative algorithm by writing a single function whose execution is not continuous.
+They are defined using the function* syntax and yield keyword to produce a sequence of values.
+
+function generatorExample() {
+  yield 'Hello';
+  yield 'World';
+}
+const gen = generatorExample();
+console.log(gen.next().value); // "Hello"
+console.log(gen.next().value); // "World"
+
+
+Generators vs. Async/Await:
+
+    Generators: Useful for implementing complex iteration behavior and lazy evaluation. They provide more control over the execution flow.
+
+    Async/Await: Built on top of promises, making asynchronous code easier to read and write.
+    They are syntactic sugar for handling asynchronous operations in a linear fashion.
+
+
+Use Case for Generators:
+
+    Implementing custom iterators.
+    Controlling async workflows, especially in scenarios requiring fine-grained control over execution order.

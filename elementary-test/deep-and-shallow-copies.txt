@@ -1,0 +1,18 @@
+Shallow Copy: Copies an object's top-level properties, but nested objects are referenced.
+
+const original = { a: 1, b: { c: 2 } };
+const shallowCopy = { ...original };
+shallowCopy.b.c = 3;
+console.log(original.b.c); // 3
+
+Deep Copy: Copies an object and all its nested objects.
+
+const original = { a: 1, b: { c: 2 } };
+const deepCopy = JSON.parse(JSON.stringify(original));
+deepCopy.b.c = 3;
+console.log(original.b.c); // 2
+
+
+Other methods for deep copying include using libraries like Lodash:
+const _ = require('lodash');
+const deepCopy = _.cloneDeep(original);

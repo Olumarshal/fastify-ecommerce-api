@@ -1,0 +1,88 @@
+Certificate Pinning
+Certificate pinning is a security measure that helps prevent man-in-the-middle (MITM)
+attacks by associating (or pinning) a service’s public key or certificate with its domain name.
+When a client connects to a server, it checks the server's certificate against a pre-defined list
+of trusted certificates or public keys. If the server's certificate doesn't match any in the list, the connection is refused.
+
+Importance:
+
+    Prevents MITM Attacks: Ensures the client is communicating with the genuine server and not an imposter.
+    Improves Security: Protects against compromised Certificate Authorities (CAs) and fraudulent certificates.
+    Ensures Authenticity: Guarantees that the server is exactly who it claims to be, which is critical for sensitive communications.
+
+Implementing Certificate Pinning in a Node.js Application
+
+To implement certificate pinning in a Node.js HTTP(S) client, you can use
+the https module to make secure requests and verify the server's certificate.
+
+Step-by-Step Implementation:
+    Obtain the Server's Certificate:
+        Fetch the server's certificate, typically by making a request and extracting the certificate.
+
+    Pin the Certificate:
+        Configure the client to only accept this specific certificate.
+
+Practical Implementation:
+
+Fetch and Extract the Server Certificate:
+    Use openssl to get the certificate in PEM format.
+
+        `openssl s_client -connect example.com:443 -showcerts`
+
+Save the Server's Certificate:
+    Save the server's certificate as server-cert.pem.
+
+Implement Certificate Pinning in Node.js:
+
+Code Example:
+
+const https = require('https');
+const fs = require('fs');
+const path = require('path');
+
+// Load the server's certificate (the one we are pinning to)
+const serverCert = fs.readFileSync(path.join(__dirname, 'server-cert.pem'));
+
+// Make a secure HTTPS request with certificate pinning
+const options = {
+  hostname: 'example.com',
+  port: 443,
+  path: '/',
+  method: 'GET',
+  // Server certificate to be pinned
+  ca: serverCert,
+  checkServerIdentity: (hostname, cert) => {
+    // Extract the server certificate in PEM format
+    const pem = cert.raw.toString('base64');
+    // Convert the loaded certificate to base64 format for comparison
+    const serverPem = serverCert.toString('base64');
+
+    // Compare the pinned certificate with the server certificate
+    if (pem !== serverPem) {
+      throw new Error('Server certificate does not match pinned certificate');
+    }
+
+    // Default verification (optional)
+    return undefined;
+  }
+};
+
+const req = https.request(options, (res) => {
+  console.log('statusCode:', res.statusCode);
+  res.on('data', (d) => {
+    process.stdout.write(d);
+  });
+});
+
+req.on('error', (e) => {
+  console.error(e);
+});
+
+req.end();
+
+
+Explanation:
+    Load Server Certificate: Load the pinned certificate from the filesystem.
+    Request Options: Configure the HTTPS request with the pinned certificate in the ca property.
+    Custom Certificate Check: Use checkServerIdentity to compare the server's certificate against the pinned certificate.
+    If they do not match, an error is thrown, rejecting the connection.

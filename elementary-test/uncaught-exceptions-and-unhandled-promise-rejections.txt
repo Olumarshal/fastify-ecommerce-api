@@ -1,0 +1,18 @@
+To ensure robust error handling and stability in a Node.js application:
+
+Uncaught Exceptions:
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  // Perform cleanup and exit process if necessary
+  process.exit(1);
+});
+
+
+Unhandled Promise Rejections:
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Handle the rejection and optionally exit process
+  process.exit(1);
+});
+
+Additionally, using domains or wrapping async code in try/catch blocks can help manage exceptions more granularly.
